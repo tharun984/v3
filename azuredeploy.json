@@ -296,7 +296,7 @@
       "autoUpgradeMinorVersion": true,
       "settings": {
         "fileUris": [
-          "https://raw.githubusercontent.com/tharun984/v2/main/installpackage.ps1"
+          "https://raw.githubusercontent.com/tharun984/v3/main/installpackage.ps1"
         ],
         "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File installpackage.ps1 -packagedownloaduri ',parameters('backupGatewayPackage'),' -companyauthcode ', parameters('companyAuthCode'))]"
       }
