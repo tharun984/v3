@@ -1,0 +1,205 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "config": {
+            "basics": {
+                "description": "Metallic backup gateway wizard",
+                "location": {
+                    "label": "Region",
+                    "toolTip": "Choose the Azure region that's right for you and your customers. Not every resource is available in every region.",
+                    "resourceTypes": [
+                        "Microsoft.Compute/virtualMachines"
+                    ],
+                    "visible": true
+                }
+            }
+        },
+        "basics": [
+            {
+                "name": "vmName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Virtual Machine name",
+                "toolTip": "The name of the Virtual Machine.",
+                "defaultValue": "gateway",
+                "constraints": {
+                    "required": true,
+                    "regex": "^[a-z0-9A-Z-]{3,15}$",
+                    "validationMessage": "The VM Name must be between 3 and 15 characters long and contain letters, numbers and hyphens only."
+                }
+            },
+            {
+                "name": "adminUsername",
+                "type": "Microsoft.Compute.UserNameTextBox",
+                "label": "Username",
+                "toolTip": "Admin username for the machine",
+                "osPlatform": "Windows",
+                "constraints": {
+                    "required": true
+                }
+            },
+            {
+                "name": "adminPassword",
+                "type": "Microsoft.Compute.CredentialsCombo",
+                "label": {
+                  "password": "Password",
+                  "confirmPassword": "Confirm password"
+                },
+                "toolTip": {
+                  "password": ""
+                },
+                "constraints": {
+                  "required": true,
+                  "customPasswordRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$",
+                  "customValidationMessage": "The password must be alphanumeric, Minimum 12 characters, at least one uppercase letter, one lowercase letter, one number and one special character:."
+                },
+                "options": {
+                  "hideConfirmation": false
+                },
+                "osPlatform": "Windows",
+                "visible": true
+              }
+        ],
+        "steps": [
+            {
+                "name": "VirtualMachineConfig",
+                "label": "Virtual Machine Settings",
+                "subLabel": {
+                    "preValidation": "Configure the virtual machine's resources and settings",
+                    "postValidation": "Done"
+                },
+                "bladeTitle": "Virtual Machine Settings",
+                "elements": [
+                    {
+                        "name": "osversion",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "OS Version",
+                        "defaultValue": "2016-datacenter-gensecond",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "2016-datacenter-gensecond",
+                                    "value": "2016-datacenter-gensecond"
+                                },
+                                {
+                                    "label": "2019-datacenter-gensecond",
+                                    "value": "2019-datacenter-gensecond"
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "vmSize",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "Virtual machine size",
+                        "toolTip": "The size of virtual machine to provision.",
+                        "recommendedSizes": [
+                            "Standard_D4s_v4"
+                        ],
+			"constraints": { "allowedSizes": ["Standard_D2s_v4", "Standard_D4s_v4", "Standard_D8s_v4"] },
+                        "osPlatform": "Windows",
+                        "count": "1"
+                    },
+                    {
+                        "name": "storageAccount",
+                        "type": "Microsoft.Storage.StorageAccountSelector",
+                        "label": "Diagnostic storage account",
+                        "toolTip": "Standard_LRS Storage Account for the Virtual Machine's diagnostics",
+                        "defaultValue": {
+                            "type": "Standard_LRS",
+                            "name": "[take(concat(replace(basics('vmName'), '-', ''), take(replace(guid(), '-', ''), 10)), 23)]"
+                        },
+                        "constraints": {
+                            "allowedTypes": [
+                                "Standard_LRS",
+                                "Standard_GRS"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "virtualNetwork",
+                        "type": "Microsoft.Network.VirtualNetworkCombo",
+                        "label": {
+                            "virtualNetwork": "Virtual network",
+                            "subnets": "Subnets"
+                        },
+                        "toolTip": {
+                            "virtualNetwork": "Name of the virtual network",
+                            "subnets": "Subnets for the virtual network"
+                        },
+                        "defaultValue": {
+                            "name": "VirtualNetwork",
+                            "addressPrefixSize": "/16"
+                        },
+                        "constraints": {
+                            "minAddressPrefixSize": "/16"
+                        },
+                        "subnets": {
+                            "subnet1": {
+                                "label": "Subnet",
+                                "defaultValue": {
+                                    "name": "Subnet-1",
+                                    "addressPrefixSize": "/24"
+                                },
+                                "constraints": {
+                                    "minAddressPrefixSize": "/24",
+                                    "minAddressCount": 12,
+                                    "requireContiguousAddresses": false
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "bladeTitle": "Metallic Configuration",
+                "name": "metallicconfig",
+                "label": "Metallic Configuration",
+                "subLabel": {
+                    "preValidation": "Configure the metallic settings",
+                    "postValidation": "Done"
+                },
+                "elements": [
+                    {
+                        "name": "companyauthcode",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Metallic AuthCode",
+                        "toolTip": "Copy the AuthCode from your Metallic account",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-zA-Z0-9]{9}$",
+                            "validationMessage": "Auth code must be length of 9 with only alphanumeric"
+                        }
+                    }
+                ]
+            }
+        ],
+        "outputs": {
+
+            "location": "[location()]",
+            "vmName": "[basics('vmName')]",
+            "adminUsername": "[basics('adminUsername')]",
+            "adminPassword": "[basics('adminPassword').password]",
+
+            "vmSize": "[steps('VirtualMachineConfig').vmSize]",
+            "OSVersion": "[steps('VirtualMachineConfig').osversion]",
+            "storageNewOrExisting": "[steps('VirtualMachineConfig').storageAccount.newOrExisting]",
+            "storageAccountName": "[steps('VirtualMachineConfig').storageAccount.name]",
+            "storageAccountType": "[steps('VirtualMachineConfig').storageAccount.type]",
+            "storageAccountResourceGroupName": "[steps('VirtualMachineConfig').storageAccount.resourceGroup]",
+
+            "virtualNetworkNewOrExisting": "[steps('VirtualMachineConfig').virtualNetwork.newOrExisting]",
+            "virtualNetworkName": "[steps('VirtualMachineConfig').virtualNetwork.name]",
+            "addressPrefixes": "[steps('VirtualMachineConfig').virtualNetwork.addressPrefixes]",
+            "subnetName": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.name]",
+            "subnetPrefix": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
+            "virtualNetworkResourceGroupName": "[steps('VirtualMachineConfig').virtualNetwork.resourceGroup]",
+
+            "companyAuthCode": "[steps('metallicconfig').companyauthcode]"
+
+        }
+    }
+}
