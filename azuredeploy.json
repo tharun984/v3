@@ -171,9 +171,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "addressSpace": {
-          "addressPrefixes": [
-            "[parameters('addressPrefixes')]"
-          ]
+          "addressPrefixes": "[parameters('addressPrefixes')]"
         },
         "subnets": [
           {
