@@ -22,7 +22,6 @@
                 "type": "Microsoft.Common.TextBox",
                 "label": "Virtual Machine name",
                 "toolTip": "The name of the Virtual Machine.",
-                "defaultValue": "gateway",
                 "constraints": {
                     "required": true,
                     "regex": "^[a-z0-9A-Z-]{3,15}$",
@@ -107,10 +106,10 @@
                         "name": "storageAccount",
                         "type": "Microsoft.Storage.StorageAccountSelector",
                         "label": "Diagnostic storage account",
-                        "toolTip": "Standard_LRS Storage Account for the Virtual Machine's diagnostics",
+                        "toolTip": "Storage Account for the Virtual Machine's diagnostics",
                         "defaultValue": {
                             "type": "Standard_LRS",
-                            "name": "[take(concat(replace(basics('vmName'), '-', ''), take(replace(guid(), '-', ''), 10)), 23)]"
+                            "name": "[take(concat('bootdiag', take(replace(guid(), '-', ''), 10)), 23)]"
                         },
                         "constraints": {
                             "allowedTypes": [
