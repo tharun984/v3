@@ -9,9 +9,6 @@
                 "location": {
                     "label": "Region",
                     "toolTip": "Choose the Azure region that's right for you and your customers. Not every resource is available in every region.",
-                    "resourceTypes": [
-                        "Microsoft.Compute/virtualMachines"
-                    ],
                     "visible": true
                 }
             }
